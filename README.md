@@ -5,14 +5,14 @@
   *Bu notebook "Duygu Analizi"ne Twitter datası kullanılarak giriş yapmaktadır. Kod açıklamalarında İngilizce ve Türkçe beraber kullanılacaktır, bu sayede ana dili 
   Türkçe olan bireyler de bu notebook'tan tamamen faydalanabilecektir*
 
-# Coding Language / *Kullanılacak Kodlama Dili*
+# Coding Language and Data Set / *Kullanılacak Kodlama Dili ve Veri Seti*
   As the coding language this notebook is going to use R. The data frame that this notebook is going to use will be the public Airlines Tweets data set. The 
   necessary packages and the data set will all be provided.
   
   *Kodlama dili olarak R programlama dili kullanılacaktır. Veri seti olark da halka açık veri seti olan Airlines Tweets veri seti kullanılacaktır. Gerekli paketler
   ve veri seti bu notebook içinde yer alacaktır.*
   
-# Necessary Packages and Data Set / *Yüklenmesi Gerekli Paketler ve Veri Seti*
+# Necessary Packages / *Yüklenmesi Gerekli Paketler*
   The necessary packages for this notebook are indicated below: 
   - `tidytext`
   - `tidyverse`
