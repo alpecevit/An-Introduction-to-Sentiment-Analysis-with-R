@@ -1,0 +1,275 @@
+---
+title: "Sentiment Analysis"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidytext)
+library(tidyverse)
+library(ggplot2)
+library(forcats)
+library(wordcloud)
+library(textdata)
+library(lda)
+library(tm)
+library(topicmodels)
+```
+
+```{r}
+twitter_data <- read.csv("Tweets.csv", stringsAsFactors = FALSE, header = T)
+```
+
+```{r}
+tidy_twitter <- twitter_data %>% 
+  # Tokenize the twitter data
+  unnest_tokens(word, text) #column name is the second argument
+```
+
+```{r}
+tidy_twitter %>% 
+  # Compute word counts
+  count(word) %>% 
+  # Arrange the counts in descending order
+  arrange(desc(n))
+```
+
+```{r}
+  tidy_twitter <- twitter_data %>% 
+  # Tokenize the twitter data
+  unnest_tokens(word, text) %>% 
+  # Remove stop words
+  anti_join(stop_words2)
+```
+
+```{r}
+word_counts <- tidy_twitter %>% 
+  count(word) %>% 
+  # Keep words with count greater than 100
+  filter(n>100) %>%
+  arrange(desc(n))
+```
+
+```{r}
+ggplot(word_counts, aes(word, n)) +
+  geom_col() +
+  # Flip the plot coordinates
+  coord_flip()
+```
+
+```{r}
+ custom_stop_words <- tribble(
+    # Column names should match stop_words
+    ~word,  ~lexicon,
+    # Add http, win, and t.co as custom stop words
+    "http", "CUSTOM",
+    "win",  "CUSTOM",
+    "t.co", "CUSTOM",
+    "1", "CUSTOM",
+    "2", "CUSTOM",
+    "3", "CUSTOM"
+  )
+```
+
+```{r}
+# Bind the custom stop words to stop_words
+stop_words2 <- stop_words %>% 
+  bind_rows(custom_stop_words)
+```
+
+```{r}
+ word_counts <- tidy_twitter %>% 
+  count(word) %>% 
+  # Keep terms that occur more than 100 times
+  filter(n > 100) %>% 
+  # Reorder word as an ordered factor by word counts
+  mutate(word2 = fct_reorder(word, n))
+```
+
+```{r}
+ggplot(word_counts, aes(x = word2, y = n)) +
+  geom_col() +
+  coord_flip() +
+  ggtitle("Word Counts")
+```
+
+```{r}
+word_counts <- tidy_twitter %>%
+count(word) %>%
+# Keep the top 20 words
+top_n(30, n) %>%
+mutate(word2 = fct_reorder(word, n)) 
+```
+
+```{r}
+ # Include a color aesthetic tied to whether or not its a complaint
+  ggplot(word_counts, aes(x = word2, y = n)) +
+  # Don't include the lengend for the column plot
+  geom_col(show.legend = FALSE) +
+  # Flip the coordinates and add a title: "Twitter Word Counts"
+  coord_flip() +
+  ggtitle("Twitter Word Counts")
+```
+
+```{r}
+# Compute word counts and assign to word_counts
+word_counts <- tidy_twitter %>% 
+  count(word)
+
+wordcloud(
+  # Assign the word column to words
+  words = word_counts$word, 
+  # Assign the count column to freq
+  freq = word_counts$n,
+  max.words = 30,
+  colors = "blue"
+) 
+```
+
+```{r}
+# Count the number of words associated with each sentiment in nrc
+get_sentiments("nrc") %>% 
+  count(sentiment) %>% 
+  # Arrange the counts in descending order
+  arrange(desc(n))
+```
+
+```{r}
+  sentiment_counts <- get_sentiments("nrc") %>% 
+  count(sentiment) %>% 
+  mutate(sentiment2 = fct_reorder(sentiment, n))
+```
+
+```{r}
+# Visualize sentiment_counts using the new sentiment factor column
+ggplot(sentiment_counts, aes(sentiment2, n)) +
+  geom_col() +
+  coord_flip() +
+  # Change the title to "Sentiment Counts in NRC", x-axis to "Sentiment", and y-axis to "Counts"
+  labs(
+    title = "Sentiment Counts in NRC",
+    x = "Sentiment",
+    y = "Counts"
+  )
+```
+
+```{r}
+  # Join tidy_twitter and the NRC sentiment dictionary
+  sentiment_twitter <- tidy_twitter %>% 
+  inner_join(get_sentiments("nrc"))
+```
+
+```{r}
+# Count the sentiments in sentiment_twitter
+sentiment_twitter %>% 
+  count(sentiment) %>% 
+  # Arrange the sentiment counts in descending order
+  arrange(desc(n))
+```
+
+```{r}
+ word_counts <- tidy_twitter %>% 
+  # Append the NRC dictionary and filter for positive, fear, and trust
+  inner_join(get_sentiments("nrc")) %>% 
+  filter(sentiment %in% c("positive", "negative", "trust", "anticipation", "sadness")) %>%
+  # Count by word and sentiment and take the top 10 of each
+  count(word, sentiment) %>% 
+  group_by(sentiment) %>% 
+  top_n(20, n) %>% 
+  ungroup() %>% 
+  # Create a factor called word2 that has each word ordered by the count
+  mutate(word2 = fct_reorder(word, n))
+```
+
+```{r}
+  # Create a bar plot out of the word counts colored by sentiment
+  ggplot(word_counts, aes(x = word2, y = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  # Create a separate facet for each sentiment with free axes
+  facet_wrap(~ sentiment, scales = "free") +
+  coord_flip() +
+  # Title the plot "Sentiment Word Counts" with "Words" for the x-axis
+  labs(
+    title = "Sentiment Word Counts",
+    x = "Words"
+  )
+```
+
+```{r}
+  word_counts %>% 
+  # Append the NRC sentiment dictionary
+  inner_join(get_sentiments("nrc")) %>% 
+  # Spread the sentiment and count columns
+  spread(sentiment, n)
+```
+
+```{r}
+  afinn_twitter <- tidy_twitter  %>%
+  # Append the afinn sentiment dictionary
+  inner_join(get_sentiments("afinn")) %>%
+  group_by(word) %>%
+  summarize(aggregate_value = sum(value))
+```
+
+```{r}
+  # Assign the DTM to dtm_twitter
+  dtm_twitter <- tidy_twitter %>% 
+  count(word, tweet_id) %>% 
+  # Cast the word counts by tweet into a DTM
+  cast_dtm(tweet_id, word, n)
+```
+
+```{r}
+matrix_twitter <- as.matrix(dtm_twitter)
+```
+
+```{r}
+# Run an LDA with 2 topics and a Gibbs sampler
+lda_out <- LDA(
+  matrix_twitter,
+  k = 2,
+  method = "Gibbs",
+  control = list(seed = 42)
+)
+```
+
+```{r}
+  # Glimpse the topic model output
+  glimpse(lda_out)
+
+# Tidy the matrix of word probabilities
+lda_topics <- lda_out %>% 
+  tidy(matrix = "beta")
+
+# Arrange the topics by word probabilities in descending order
+lda_topics %>% 
+  arrange(desc(beta))
+```
+
+```{r}
+  # Select the top 15 terms by topic and reorder term
+  word_probs2 <- lda_topics %>% 
+  group_by(topic) %>% 
+  top_n(15, beta) %>% 
+  ungroup() %>%
+  mutate(term2 = fct_reorder(term, beta))
+```
+
+```{r}
+# Plot word probs, color and facet based on topic
+ggplot(
+  word_probs2, 
+  aes(term2, beta, fill = as.factor(topic))
+) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip()
+```
+
