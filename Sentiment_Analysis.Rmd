@@ -200,7 +200,9 @@ sentiment_twitter %>%
   # Spread the sentiment and count columns
   spread(sentiment, n)
 ```
-# As our next step we will ddiscover the afinn dictionary which is another popular sentiment dictionary. Afinn dictionary gives numeric values to every word. Negative numbers indicate negative feelings, positive numbers indicate positive feelings of the word
+# As our next step we will ddiscover the afinn dictionary which is another popular sentiment dictionary. 
+# Afinn dictionary gives numeric values to every word.
+# Negative numbers indicate negative feelings, positive numbers indicate positive feelings of the word
 ```{r}
   afinn_twitter <- tidy_twitter  %>%
   inner_join(get_sentiments("afinn")) %>%  # Append the afinn sentiment dictionary
@@ -221,7 +223,8 @@ afinn_twitter
 matrix_twitter <- as.matrix(dtm_twitter)
 ```
 
-# It is time to run our LDA model with 2 topics. Topics are actually self-explanatory concepts. They indicate the grouped words that have similar sentiments or structures. You can try different number of topics to see what they are useful for, you only need to change the number of the parameter "k"
+# It is time to run our LDA model with 2 topics. Topics are actually self-explanatory concepts. They indicate the grouped words that have similar sentiments or structures
+# You can try different number of topics to see what they are useful for, you only need to change the number of the parameter "k"
 ```{r}
 # Run an LDA with 2 topics and a Gibbs sampler
 lda_out <- LDA(
@@ -268,4 +271,6 @@ ggplot(
   coord_flip()
 ```
 # A Short Note From the Author
-# This notebook was aimed to give a brief introduction to Sentiment Analysis. I consider myself as the student of this work and not as the author of it. I am also in a learning process and further contribution to this notebook is more than welcomed. I strongly believe in open source argument and I believe that as a community we can learn from each other by sharing our work. I hope this notebook will be useful to some people out there.
+# This notebook was aimed to give a brief introduction to Sentiment Analysis. I consider myself as the student of this work and not as the author of it
+# I am also in a learning process and further contribution to this notebook is more than welcomed
+# I strongly believe in open source works and I believe that as a community we can learn from each other by sharing our work. I hope this notebook will be useful to some people out there
