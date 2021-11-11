@@ -190,7 +190,8 @@ word_counts %>%
   # Spread the sentiment and count columns
   spread(sentiment, n)
 
-# As our next step we will ddiscover the afinn dictionary which is another popular sentiment dictionary. Afinn dictionary gives numeric values to every word. Negative numbers indicate negative feelings, positive numbers indicate positive feelings of the word
+# As our next step we will ddiscover the afinn dictionary which is another popular sentiment dictionary. 
+# Afinn dictionary gives numeric values to every word. Negative numbers indicate negative feelings, positive numbers indicate positive feelings of the word
 
 afinn_twitter <- tidy_twitter  %>%
   inner_join(get_sentiments("afinn")) %>%  # Append the afinn sentiment dictionary
