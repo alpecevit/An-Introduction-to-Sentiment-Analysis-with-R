@@ -20,3 +20,6 @@
   
   First, you need to install these packages by using the `install.packages("package_name_here")` function and then use `library(package_name_here)` function to
   access these packages.
+  
+# Author's Note
+This notebook includes excessive amount of piping so before you dive into the notebook it is better to get familiar with the practice.
