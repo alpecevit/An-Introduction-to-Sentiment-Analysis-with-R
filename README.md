@@ -1,6 +1,6 @@
 # Basic Introduction to Sentiment Analysis 
-  This notebook is going to give a brief introduction to what is called the "Sentiment Analysis" with the Twitter data. This notebook includes both Turkish and 
-  English explanations so that the native Turkish speakers can benefit from it as well. Italic writings are in Turkish.
+  This notebook is going to give a brief introduction to what is called the "Sentiment Analysis" with the Twitter data. Notebook will be in English but Turkish
+  explanations can be provided upon request for the native Turkish speakers.
 
 # Coding Language and Data Set 
   As the coding language this notebook is going to use R. The data frame that this notebook is going to use will be the public Airlines Tweets data set. The 
